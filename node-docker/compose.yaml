@@ -1,0 +1,20 @@
+services:
+  express:
+    build: 
+      context: ./express
+    extends:
+      file: ./express/compose.yaml
+      service: express
+    # networks:
+    #   trx-apps:
+    #     ipv4_address: 192.168.205.101
+
+volumes:
+  express-node-modules:
+
+# networks:
+#   trx-apps:
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 192.168.205.0/24

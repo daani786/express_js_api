@@ -1,0 +1,22 @@
+version: "3"
+services:
+  express:
+    container_name: express
+    restart: always
+    build:
+      context: .
+      additional_contexts:
+        app_folder: ./../code/express-app
+      dockerfile: ./Dockerfile
+    volumes:
+      # Mount the local directory to the container's working directory 
+      # for live code updates during development
+      - ./../code/express-app:/express-app
+      # Create a named volume for node_modules to avoid host machine dependencies
+      # - /usr/src/app/node_modules
+      - express-node-modules:/express-app/node_modules
+    environment:
+      NODE_ENV: development
+    ports:
+      - 8000:8000
+    stdin_open: true
