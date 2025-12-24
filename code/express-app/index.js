@@ -60,13 +60,21 @@ app.get('/api/users', (req, res) => {
   return res.json(users);
 });
 
-app.get('/api/users/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const user = users.find((user) => {
-    return user.id  === id
+app
+  .route('/api/users/:id')
+  .get((req, res) => {
+    const id = Number(req.params.id);
+    const user = users.find((user) => {
+      return user.id  === id
+    });
+    return res.json(user);
+  })
+  .patch((req, res) => {
+    return res.json({status: 1, message: 'User updated successfully'});
+  })
+  .delete((req, res) => {
+    return res.json({status: 1, message: 'User deleted successfully'});
   });
-  return res.json(user);
-});
 
 const getUserHtml = (user) => {
   let html = "";
