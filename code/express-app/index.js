@@ -157,11 +157,11 @@ app
     let userIndex = users.data.findIndex((user) => {
       return user.id  === id
     });
-    let user = users.data[userIndex];
-    if (!user) {
+    if (!userIndex || userIndex === -1) {
       resp.message = "User not found";
       return res.json(resp);
     }
+    let user = users.data[userIndex];
 
     const fields = ['first_name', 'last_name', 'email', 'gender', 'job_title'];
     let nbFieldsUpdated = 0;
@@ -189,7 +189,25 @@ app
     });
   })
   .delete((req, res) => {
-    return res.json({status: 1, message: 'User deleted successfully'});
+    let resp = {status: -1, message: "Unable to fetch users"};
+    if (!users.data || users.data.length <= 0) {
+      return res.json(resp);
+    }
+    const id = Number(req.params.id);
+    let userIndex = users.data.findIndex((user) => {
+      return user.id  === id
+    });
+    if (!userIndex || userIndex === -1) {
+      resp.message = "User not found";
+      return res.json(resp);
+    }
+    console.log('userIndex', userIndex);
+    users.data.splice(userIndex, 1);
+    fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
+      resp.status = 1;
+      resp.message = 'User deleted successfully';
+      return res.json(resp);
+    });
   });
 
 app.listen(PORT, () => {
