@@ -142,7 +142,51 @@ app
     return res.json(resp);
   })
   .patch((req, res) => {
-    return res.json({status: 1, message: 'User updated successfully'});
+    let resp = {status: -1, message: "no data provided"};
+    const body = req.body;
+    if (!body) {
+      return res.json(resp);
+    }
+
+    if (!users.data || users.data.length <= 0) {
+      resp.message = "Unable to fetch users";
+      return res.json(resp);
+    }
+    
+    const id = Number(req.params.id);
+    let userIndex = users.data.findIndex((user) => {
+      return user.id  === id
+    });
+    let user = users.data[userIndex];
+    if (!user) {
+      resp.message = "User not found";
+      return res.json(resp);
+    }
+
+    const fields = ['first_name', 'last_name', 'email', 'gender', 'job_title'];
+    let nbFieldsUpdated = 0;
+    for (const key in body) {
+      if (
+        body.hasOwnProperty(key) &&
+        fields.includes(key) &&
+        user.hasOwnProperty(key)
+      ) {
+        user[key] = body[key];
+        nbFieldsUpdated++;
+      }
+    }
+    if (nbFieldsUpdated === 0) {
+      resp.status = -1;
+      resp.message = "No valid fields to update";
+      return res.json(resp);
+    }
+    
+    users.data[userIndex] = user;
+    fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
+      resp.status = 1;
+      resp.message = 'User updated successfully';
+      return res.json(resp);
+    });
   })
   .delete((req, res) => {
     return res.json({status: 1, message: 'User deleted successfully'});
