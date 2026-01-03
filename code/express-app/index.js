@@ -9,6 +9,14 @@ const PORT = process.env.PORT || 8000;
 // Middleware to parse JSON and URL-encoded data for post requests
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware to log requests to access.log file
+app.use((req, resp, next) => {
+  let logMsg = `${new Date().toISOString()}: ${req.ip} ${req.method}: ${req.path}\n`;
+  fs.appendFile('./logs/access.log', logMsg, (err, data) => {
+    next();
+  });
+})
+
 // Routes for Html Response
 app.get('/', (req, res) => {
   let html = "";
