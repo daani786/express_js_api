@@ -9,8 +9,28 @@ services:
     #   trx-apps:
     #     ipv4_address: 192.168.205.101
 
+  mongo-db:
+    extends:
+      file: ./mongo-db/compose.yaml
+      service: mongo-db
+    # networks:
+    #   trx-apps:
+    #     ipv4_address: 192.168.205.102
+
+  mongo-express:
+    extends:
+      file: ./mongo-express/compose.yaml
+      service: mongo-express
+    depends_on:
+      - mongo-db
+    # networks:
+    #   trx-apps:
+    #     ipv4_address: 192.168.205.103
+
 volumes:
   express-node-modules:
+  mongodb_data:
+    driver: local
 
 # networks:
 #   trx-apps:

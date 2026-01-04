@@ -17,6 +17,7 @@ services:
       - express-node-modules:/express-app/node_modules
     environment:
       NODE_ENV: development
+      MONGODB_URL: mongodb://root:1234@mongo-db:27017/express_api
     ports:
       - 8000:8000
     stdin_open: true
