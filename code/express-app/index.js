@@ -398,26 +398,45 @@ app
       });
     }
   })
-  .delete((req, res) => {
+  .delete(async (req, res) => {
+    let id = req.params.id;
     let resp = {status: -1, message: "Unable to fetch users"};
-    if (!users || !users.data || users.data.length <= 0) {
-      return res.status(404).json(resp);
+    if (useMongodb) {
+      try {
+        let result = await User.findByIdAndDelete(id);
+        console.log('result', result);
+        if (!result) {
+          resp.message = "User not found";
+          return res.status(404).json(resp);
+        }
+        resp.status = 1;
+        resp.message = 'User deleted successfully';
+        return res.status(200).json(resp);
+      } catch (error) {
+        console.error("Error deleting user in MongoDB:", error.message);
+        resp.message = "Error deleting user in MongoDB";
+        return res.status(500).json(resp);
+      }
+    } else {
+      if (!users || !users.data || users.data.length <= 0) {
+        return res.status(404).json(resp);
+      }
+      id = Number(id);
+      let userIndex = users.data.findIndex((user) => {
+        return user.id  === id
+      });
+      if (!userIndex || userIndex === -1) {
+        resp.message = "User not found";
+        return res.status(404).json(resp);
+      }
+      console.log('userIndex', userIndex);
+      users.data.splice(userIndex, 1);
+      fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
+        resp.status = 1;
+        resp.message = 'User deleted successfully';
+        return res.status(200).json(resp);
+      });
     }
-    const id = Number(req.params.id);
-    let userIndex = users.data.findIndex((user) => {
-      return user.id  === id
-    });
-    if (!userIndex || userIndex === -1) {
-      resp.message = "User not found";
-      return res.status(404).json(resp);
-    }
-    console.log('userIndex', userIndex);
-    users.data.splice(userIndex, 1);
-    fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
-      resp.status = 1;
-      resp.message = 'User deleted successfully';
-      return res.status(200).json(resp);
-    });
   });
 
 app.listen(PORT, () => {
