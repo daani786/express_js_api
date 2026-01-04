@@ -77,15 +77,15 @@ app.get('/users/:id', (req, res) => {
 // Route for Json Response
 app.get('/api/users', (req, res) => {
   let resp = {status: -1, message: "Unable to fetch users"};
-  if (!users.data || users.data.length <= 0) {
-    return res.json(resp);
+  if (!users || !users.data || users.data.length <= 0) {
+    return res.status(404).json(resp);
   }
 
   resp.status = 1;
   resp.message = 'Users fetched successfully';
   resp.total_records = users.data.length;
   resp.data = users.data;
-  return res.json(resp);
+  return res.status(200).json(resp);
 });
 
 app.post('/api/users', (req, res) => {
@@ -99,7 +99,7 @@ app.post('/api/users', (req, res) => {
     !body.gender || 
     !body.job_title
   ) {
-    return res.json(resp);
+    return res.status(400).json(resp);
   }
 
   let maxId = 1;
@@ -124,7 +124,7 @@ app.post('/api/users', (req, res) => {
     resp.status = 1;
     resp.message = 'User created successfully';
     resp.newUserId = maxId
-    return res.json(resp);
+    return res.status(201).json(resp);
   });
 });
 
@@ -132,8 +132,8 @@ app
   .route('/api/users/:id')
   .get((req, res) => {
     let resp = {status: -1, message: "Unable to fetch users"};
-    if (!users.data || users.data.length <= 0) {
-      return res.json(resp);
+    if (!users || !users.data || users.data.length <= 0) {
+      return res.status(404).json(resp);
     }
 
     const id = Number(req.params.id);
@@ -142,23 +142,23 @@ app
     });
     if (!user) {
       resp.message = "User not found";
-      return res.json(resp);
+      return res.status(404).json(resp);
     }
     resp.status = 1;
     resp.message = 'User fetched successfully';
     resp.data = user;
-    return res.json(resp);
+    return res.status(200).json(resp);
   })
   .patch((req, res) => {
     let resp = {status: -1, message: "no data provided"};
     const body = req.body;
     if (!body) {
-      return res.json(resp);
+      return res.status(400).json(resp);
     }
 
-    if (!users.data || users.data.length <= 0) {
+    if (!users || !users.data || users.data.length <= 0) {
       resp.message = "Unable to fetch users";
-      return res.json(resp);
+      return res.status(404).json(resp);
     }
     
     const id = Number(req.params.id);
@@ -167,7 +167,7 @@ app
     });
     if (!userIndex || userIndex === -1) {
       resp.message = "User not found";
-      return res.json(resp);
+      return res.status(404).json(resp);
     }
     let user = users.data[userIndex];
 
@@ -186,20 +186,20 @@ app
     if (nbFieldsUpdated === 0) {
       resp.status = -1;
       resp.message = "No valid fields to update";
-      return res.json(resp);
+      return res.status(400).json(resp);
     }
     
     users.data[userIndex] = user;
     fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
       resp.status = 1;
       resp.message = 'User updated successfully';
-      return res.json(resp);
+      return res.status(200).json(resp);
     });
   })
   .delete((req, res) => {
     let resp = {status: -1, message: "Unable to fetch users"};
-    if (!users.data || users.data.length <= 0) {
-      return res.json(resp);
+    if (!users || !users.data || users.data.length <= 0) {
+      return res.status(404).json(resp);
     }
     const id = Number(req.params.id);
     let userIndex = users.data.findIndex((user) => {
@@ -207,14 +207,14 @@ app
     });
     if (!userIndex || userIndex === -1) {
       resp.message = "User not found";
-      return res.json(resp);
+      return res.status(404).json(resp);
     }
     console.log('userIndex', userIndex);
     users.data.splice(userIndex, 1);
     fs.writeFile('./users_mock_data.json', JSON.stringify(users), (err, data) => {
       resp.status = 1;
       resp.message = 'User deleted successfully';
-      return res.json(resp);
+      return res.status(200).json(resp);
     });
   });
 
