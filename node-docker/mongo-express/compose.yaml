@@ -2,13 +2,16 @@ version: "3"
 services:
   mongo-express:
     image: mongo-express:latest
-    container_name: mongo-express
+    container_name: express_api_mongo-express
     restart: always
-    ports:
-      - "8081:8081"
+    # ports:
+    #   - "8081:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=root
       - ME_CONFIG_MONGODB_ADMINPASSWORD=1234
       - ME_CONFIG_MONGODB_URL=mongodb://root:1234@mongo-db:27017/
       - ME_CONFIG_BASICAUTH_USERNAME=user
       - ME_CONFIG_BASICAUTH_PASSWORD=pass
+      # Nginx-proxy reads this to route traffic
+      - VIRTUAL_HOST=express_api_mongo_express.local
+      - VIRTUAL_PORT=8081
