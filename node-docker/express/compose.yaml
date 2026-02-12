@@ -1,7 +1,7 @@
 version: "3"
 services:
   express:
-    container_name: express
+    container_name: express_api
     restart: always
     build:
       context: .
@@ -18,6 +18,9 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_URL: mongodb://root:1234@mongo-db:27017/express_api
-    ports:
-      - 8000:8000
+      # Nginx-proxy reads this to route traffic
+      VIRTUAL_HOST: express_api.local
+      VIRTUAL_PORT: 8000
+    # ports:
+    #   - 8000:8000
     stdin_open: true

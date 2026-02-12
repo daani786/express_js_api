@@ -1,0 +1,16 @@
+services:
+  # 1. The Gateway (Automated Nginx)
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - web_proxy
+
+
+networks:
+  web_proxy:
+    external: true

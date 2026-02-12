@@ -5,6 +5,8 @@ services:
     extends:
       file: ./express/compose.yaml
       service: express
+    networks:
+      - web_proxy
     # networks:
     #   trx-apps:
     #     ipv4_address: 192.168.205.101
@@ -13,6 +15,8 @@ services:
     extends:
       file: ./mongo-db/compose.yaml
       service: mongo-db
+    networks:
+      - web_proxy
     # networks:
     #   trx-apps:
     #     ipv4_address: 192.168.205.102
@@ -23,6 +27,8 @@ services:
       service: mongo-express
     depends_on:
       - mongo-db
+    networks:
+      - web_proxy
     # networks:
     #   trx-apps:
     #     ipv4_address: 192.168.205.103
@@ -31,6 +37,10 @@ volumes:
   express-node-modules:
   mongodb_data:
     driver: local
+
+networks:
+  web_proxy:
+    external: true
 
 # networks:
 #   trx-apps:
